@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+        <link rel="stylesheet" href="static/nav.css">
+        <link rel="stylesheet" href="static/main.css">
+    </head>
+    <body>
+        <!-------------------------------------Navigation Bar------------------------------------>
+        <div class="topnav" id="myTopnav">
+            <i><a href=".">iMarts</a></i>
+            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+            <i class="fa fa-bars"></i></a>
+            <a href="." class="active">Home</a>
+            <a href="about">About</a>
+            <a href="contactus">Contact</a>
+            <a href=".">Back</a>
+            <a href="logout">Logout</a>
+        </div>
+        <!-- ------------------------------------- Top information ------------------------------------- -->
+        <div class="top-box">
+            <div class="greeting">
+                <h1>Hello, User<br>
+                Good Morning</h1>
+            </div>
+        </div>
+        <div class="top-box">
+            <div class="greeting">
+                <h3><span id="time"></span></h3>
+            </div>
+        </div>
+        <div class="top-box">
+            <ul class="greeting">
+                <li>BUY:<progress id="buy" value="10" max="100"></progress></li>
+                <li>SELL :<progress id="sell" value="10" max="100"></progress></li>
+                <li>HOLD :<progress id="hold" value="10" max="100"></progress></li>
+            </ul>
+        </div>
+        <div class="company">
+            <div class="stats">
+                 {% block content %}
+                <div class="chart">
+                <h1>{{stock.title}}</h1>
+                <canvas id="myChart"></canvas>
+            </div>
+            </div>
+            <div class="company-info-stats">
+                <div class="company-stats">
+                    <h1>Compony Stats</h1>
+                    <h2>Previous Close:{{stock.last_open}}</h2>
+                    <h2>Today Open:{{stock.open}}</h2>
+                    <h2>Today Close:{{stock.close}}</h2>
+                    <h2>Volume:{{stock.volume}}</h2>
+                    {% endblock %}
+                </div>
+                <form method="POST" class="company-info">
+                    <h1>Compony</h1>
+                        {% csrf_token %}
+                        <a href="main"><input type="submit" class="even" name="company" value="Samsung Electronics" /></a>
+                        <a href="main"><input type="submit" class="odd" name="company" value="Wipro" /></a>
+                        <a href="main"><input type="submit" class="even" name="company" value="IBM" /></a>
+                        <a href="main"><input type="submit" class="odd" name="company" value="ICIC Bank" /></a>
+                        <a href="main"><input type="submit" class="even" name="company" value="Tata Steel" /></a>
+                        <a href="main"><input type="submit" class="odd" name="company" value="Infosys" /></a>
+                        <a href="main"><input type="submit" class="even" name="company" value="SBI" /></a>
+                        <a href="main"><input type="submit" class="odd" name="company" value="Reliance" /></a>
+                        <a href="main"><input type="submit" class="even" name="company" value="Amazon" /></a>
+                        <a href="main"><input type="submit" class="odd" name="company" value="Google" /></a>
+                </form>
+            </div>
+        </div>
+        <div class="News" id= "news">          
+        </div>
+        <script src="static/index.js"></script>
+        <script src="static/calender.js"></script>
+        <script>   
+            var data = JSON.parse("{{data|escapejs}}");
+            var news = document.getElementById("news");
+            var myChart = new Chart(document.getElementById("myChart"), {
+                type: "line",
+                data: {
+                    labels: data["time"],
+                    datasets: [{
+                        fill: false,
+                        lineTension: 0,
+                        backgroundColor: "blue",
+                        borderColor: "rgb(23, 226, 33)",
+                        data: data["value"]
+                    }]
+                },
+                options: {
+                    legend: { display: false },
+                    scales: {
+                        yAxes: [{ ticks: { min: data["minval"], max: data["maxval"] } }],
+                    }
+                }
+            });
+            let newscont = "<h1>Todays News</h1><hr>";
+            for (var i = 0; i < 6; i++) {
+                newscont += `<li>${data["news_title"][i]}</li>`;
+            }
+            newscont += `<hr>`;
+            news.innerHTML = newscont;
+            var avg = (data["open"] + data["close"]) / 2;
+            if (data["open"] > data["close"]) {
+                document.getElementById("sell").value = avg * 0.50;
+            }
+            if (data["open"] < data["close"]) {
+                document.getElementById("buy").value = avg * 0.40;
+            }
+            if ((data["open"] - data["close"]) < 30 && (data["open"] - data["close"]) > 0) {
+                document.getElementById("hold").value = avg * 0.30;
+            }
+        </script>
+    </body>
+</html>
