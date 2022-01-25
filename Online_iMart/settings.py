@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-w$c)f10q&3$g5xusm6v!uzyg=(^#qs5nygyc)%+on_86u#=pci
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['Online_iMart.herokuapp.com']
 
 
 # Application definition
